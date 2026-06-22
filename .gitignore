@@ -1,0 +1,28 @@
+# Configuração local do Claude
+.claude/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# PyInstaller (artefatos de build)
+build/
+dist/
+*.spec
+
+# Backups exportados da IDE Arduino (redundantes com o histórico do git)
+*.zip
+
+# Artefatos de build do Arduino
+/build/
+*.bin
+*.elf
+*.hex

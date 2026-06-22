@@ -8,6 +8,10 @@ internal flash and loop on screen; you manage everything through a **built-in
 web interface** served by the board itself, or through a **desktop app**
 (GUI + CLI) that also **resizes GIFs before uploading**.
 
+<p align="center">
+  <img src="docs/demo.gif" alt="GIF Display playing the Nyan Cat GIF on the TTGO T-Display" width="340">
+</p>
+
 ## Features
 
 - ▶️ Plays animated GIFs straight from flash (LittleFS), streamed frame by frame.

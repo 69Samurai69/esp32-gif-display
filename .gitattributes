@@ -17,3 +17,6 @@
 *.gif   binary
 *.bin   binary
 *.zip   binary
+*.mp4   binary
+*.png   binary
+*.jpg   binary

@@ -8,6 +8,10 @@ flash interna do ESP32 e tocam em loop; você gerencia tudo por uma **interface
 web** servida pela própria placa ou por um **app de PC** (GUI + CLI) que ainda
 **redimensiona os GIFs antes do upload**.
 
+<p align="center">
+  <img src="docs/demo.gif" alt="GIF Display tocando o Nyan Cat na TTGO T-Display" width="340">
+</p>
+
 ## Recursos
 
 - ▶️ Reproduz GIFs animados a partir da flash (LittleFS), em streaming.

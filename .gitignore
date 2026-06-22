@@ -18,6 +18,9 @@ build/
 dist/
 *.spec
 
+# Vídeos crus de gravação (muito grandes p/ versionar; ver docs/demo.gif)
+*.mp4
+
 # Backups exportados da IDE Arduino (redundantes com o histórico do git)
 *.zip
 

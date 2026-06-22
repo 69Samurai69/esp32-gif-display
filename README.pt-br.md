@@ -97,8 +97,6 @@ data/gifs/          GIFs para a carga inicial via `uploadfs`
 tools/esp32gif/     app de PC (Python): GUI + CLI + redimensionamento
 ```
 
-Plano de evolução e fases em [ROADMAP.md](ROADMAP.md).
-
 ## Créditos
 
 - [bodmer/TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) — driver do display.

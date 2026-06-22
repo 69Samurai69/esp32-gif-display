@@ -1,8 +1,7 @@
 // ============================================================================
 //  GIF Display - firmware autonomo para TTGO T-Display ESP32
-//  Fase 0/1: player de GIF lendo da flash (LittleFS) em streaming.
-//  Fase 2:   configuracao de WiFi via portal cativo + mDNS.
-//  Fases seguintes (interface web, OTA) no ROADMAP.md.
+//  Player de GIF da flash (LittleFS) + WiFi (portal cativo) + servidor web
+//  de gestao e configuracao da tela.
 // ============================================================================
 #include <Arduino.h>
 #include "config.h"

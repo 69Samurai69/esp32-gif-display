@@ -98,8 +98,6 @@ data/gifs/          GIFs for the initial bulk load via `uploadfs`
 tools/esp32gif/     desktop app (Python): GUI + CLI + resizing
 ```
 
-Roadmap and phases in [ROADMAP.md](ROADMAP.md).
-
 ## Credits
 
 - [bodmer/TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) — display driver.

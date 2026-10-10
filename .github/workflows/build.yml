@@ -1,4 +1,3 @@
-
 name: Build TTGO GIF Display
 
 on:
@@ -22,15 +21,33 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install PlatformIO
-        run: pip install platformio
+      - name: Install build tools
+        run: pip install platformio esptool
 
       - name: Build firmware
         run: pio run -e ttgo-t-display
 
-      - name: Save BIN file
+      - name: Merge complete firmware image
+        shell: bash
+        run: |
+          BUILD=".pio/build/ttgo-t-display"
+          BOOT_APP0="$(find ~/.platformio/packages -name boot_app0.bin | head -n 1)"
+          test -f "$BUILD/bootloader.bin"
+          test -f "$BUILD/partitions.bin"
+          test -f "$BUILD/firmware.bin"
+          test -f "$BOOT_APP0"
+          python -m esptool --chip esp32 merge_bin \
+            -o "$BUILD/merged.bin" \
+            --flash_mode dio \
+            --flash_size 16MB \
+            0x1000 "$BUILD/bootloader.bin" \
+            0x8000 "$BUILD/partitions.bin" \
+            0xe000 "$BOOT_APP0" \
+            0x10000 "$BUILD/firmware.bin"
+
+      - name: Upload merged firmware
         uses: actions/upload-artifact@v4
         with:
-          name: ttgo-gif-display-firmware
-          path: .pio/build/ttgo-t-display/firmware.bin
+          name: ttgo-gif-display-merged
+          path: .pio/build/ttgo-t-display/merged.bin
           if-no-files-found: error

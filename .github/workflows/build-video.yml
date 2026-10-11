@@ -1,0 +1,57 @@
+name: Build TTGO Video Stream
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "video-fw/**"
+      - ".github/workflows/build-video.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install build tools
+        run: pip install platformio esptool
+
+      - name: Build video firmware
+        working-directory: video-fw
+        run: pio run -e ttgo-video
+
+      - name: Merge complete firmware image
+        shell: bash
+        run: |
+          BUILD="video-fw/.pio/build/ttgo-video"
+          BOOT_APP0="$(find ~/.platformio/packages -name boot_app0.bin | head -n 1)"
+          test -f "$BUILD/bootloader.bin"
+          test -f "$BUILD/partitions.bin"
+          test -f "$BUILD/firmware.bin"
+          test -f "$BOOT_APP0"
+          python -m esptool --chip esp32 merge_bin \
+            -o "$BUILD/merged.bin" \
+            --flash_mode dio \
+            --flash_size 16MB \
+            0x1000 "$BUILD/bootloader.bin" \
+            0x8000 "$BUILD/partitions.bin" \
+            0xe000 "$BOOT_APP0" \
+            0x10000 "$BUILD/firmware.bin"
+
+      - name: Upload merged firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ttgo-video-stream-merged
+          path: video-fw/.pio/build/ttgo-video/merged.bin
+          if-no-files-found: error

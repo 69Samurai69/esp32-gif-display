@@ -4,6 +4,7 @@
 #include <WebSocketsServer.h>
 #include <TFT_eSPI.h>
 #include <TJpg_Decoder.h>
+#include <esp_sleep.h>
 
 // LILYGO/TTGO T-Display V1.1: classic ESP32 + ST7789.
 static const char* AP_SSID = "TTGO-Video";
@@ -32,7 +33,8 @@ small{color:#bdc5d0}
 <h2>TTGO Video Stream</h2>
 <p>Подключись к Wi-Fi <b>TTGO-Video</b> (пароль <b>ttgovideo</b>) и открой <b>http://192.168.4.1</b>. Выбери видео — страница автоматически обрежет его под экран 240×135.</p>
 <input id="file" type="file" accept="video/*">
-<br><button id="start">Начать трансляцию</button><button id="stop">Остановить</button>
+<br><button id="start">Начать трансляцию</button><button id="stop">Остановить</button><button id="power" style="background:#dc2626">Выключить плату</button>
+<p><small>Для выхода из Deep Sleep нажми физическую кнопку BOOT на плате или перезапусти питание.</small></p>
 <div id="status">Подключение к дисплею…</div>
 <video id="video" playsinline controls></video>
 <p><small>Предпросмотр кадра после обрезки (точно в пропорции экрана):</small></p>
@@ -91,6 +93,12 @@ document.getElementById('start').onclick=async()=>{
   catch(e){status('Браузер заблокировал воспроизведение. Нажми Play на видео и затем начни трансляцию.');}
 };
 document.getElementById('stop').onclick=()=>{active=false;video.pause();status('Трансляция остановлена.');};
+document.getElementById('power').onclick=()=>{
+  if(!confirm('Перевести плату в Deep Sleep? Wi-Fi и видео отключатся. Для запуска нажми физическую кнопку BOOT или перезапусти питание.'))return;
+  active=false;video.pause();
+  if(socket&&socket.readyState===WebSocket.OPEN){socket.send('deepSleep');status('Выключаю плату…');}
+  else status('Нет соединения с платой.');
+};
 connect();
 </script></html>
 )HTML";
@@ -102,6 +110,14 @@ bool tftOutput(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) {
 }
 
 void onWebSocketEvent(uint8_t client, WStype_t type, uint8_t* payload, size_t length) {
+  if (type == WStype_TEXT && payload && length == 9 && memcmp(payload, "deepSleep", 9) == 0) {
+    delay(150);
+    digitalWrite(TFT_BL, LOW);
+    // GPIO0 is the BOOT button on the classic TTGO T-Display; press it to wake.
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0);
+    esp_deep_sleep_start();
+    return;
+  }
   if (type != WStype_BIN || !payload || length < 4 || frameBusy) return;
   frameBusy = true;
   TJpgDec.drawJpg(0, 0, payload, (uint32_t)length);
